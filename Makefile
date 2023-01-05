@@ -29,7 +29,7 @@ build-all-go: cli backend sbom-db runtime-k8s-scanner cis-docker-benchmark-scann
 .PHONY: ui
 ui: ## Build UI
 	@(echo "Building UI ..." )
-	@(cd ui; npm i ; npm run build; )
+	@(cd ui; npm i --force ; npm run build; )
 	@ls -l ui/build
 
 .PHONY: cli
@@ -97,7 +97,7 @@ push-docker-sbom-db: docker-sbom-db ## Build and Push SBOM DB Backend Docker ima
 .PHONY: docker-backend
 docker-backend: ## Build Backend Docker image
 	@(echo "Building backend docker image ..." )
-	docker build --file ./Dockerfile.backend --build-arg VERSION=${VERSION} \
+	docker build --platform linux/amd64 --file ./Dockerfile.backend --build-arg VERSION=${VERSION} \
 		--build-arg BUILD_TIMESTAMP=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
 		--build-arg COMMIT_HASH=$(shell git rev-parse HEAD) \
 		-t ${DOCKER_IMAGE}:${DOCKER_TAG} .
@@ -163,7 +163,7 @@ clean: clean-ui clean-backend clean-cli clean-runtime-k8s-scanner clean-cis-dock
 clean-ui:
 	@(rm -rf ui/build ; echo "UI cleanup done" )
 
-.PHONY: clean-backend
+.PHONY: clean---force backend
 clean-backend:
 	@(rm -rf backend/bin ; echo "Backend cleanup done" )
 
